@@ -4,17 +4,18 @@ namespace :dev do
   desc 'Configura o ambiente de desenvolvimento'
   task setup: :environment do
     if Rails.env.development?
-      show_spinner('Apagando BD...') { `rails db:drop` }
-      show_spinner('Criando BD...') { `rails db:create` }
-      show_spinner('Migrando BD...') { `rails db:migrate` }
-      show_spinner('Cadastrando o administrador padrão...') { `rails dev:add_default_admin` }
-      show_spinner('Cadastrando o usuário padrão...') { `rails dev:add_default_user` }
+      show_spinner('Dropping BD...') { `rails db:drop` }
+      show_spinner('Creating BD...') { `rails db:create` }
+      show_spinner('Migrating BD...') { `rails db:migrate` }
+      show_spinner('Add default admin...') { `rails dev:add_default_admin` }
+      show_spinner('Add extra admins...') { `rails dev:add_extra_admin` }
+      show_spinner('Add default user...') { `rails dev:add_default_user` }
     else
       puts 'Você não está em ambiente de desenvolvimento!'
     end
   end
 
-  desc 'Adiciona o administrador padrão'
+  desc 'Add default admin'
   task add_default_admin: :environment do
     Admin.create!(
       email: 'admin@admin.com',
@@ -23,7 +24,18 @@ namespace :dev do
     )
   end
 
-  desc 'Adiciona o usuário padrão'
+  desc 'Add extra admins'
+  task add_extra_admin: :environment do
+    10.times do
+      Admin.create!(
+        email: Faker::Internet.email,
+        password: DEFAULT_PASSWORD,
+        password_confirmation: DEFAULT_PASSWORD
+      )
+    end
+  end
+
+  desc 'Add default user'
   task add_default_user: :environment do
     User.create!(
       email: 'user@user.com',
